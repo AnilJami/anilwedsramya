@@ -56,7 +56,7 @@ $(document).on('ready', function () {
     // JavaScript Document
     var today = new Date();
 
-    var target = new Date("02/05/2017");
+    var target = new Date("02/05/2021");
     //target.setDate(120); // Set no. of days from today
     target.setHours(0, 12, 0, 0);
 
@@ -71,7 +71,7 @@ $(document).on('ready', function () {
                 'now': today.getTime() / 1000
             }, function () {
                 // Finish Callback
-            });
+            }); 
     }
     $(window).load(function () {
         if ($.find('.gridlayout').length) {
