@@ -21,10 +21,14 @@
         });
     function appendData(data) {
         var mainContainer = document.getElementById("myData");
+        var counter = 1;
         for (var i = 0; i < data.length; i++) {
-            var div = document.createElement("div");
-            div.innerHTML = 'Review: ' + data[i].body + '<br/><br/><br/>';
-            mainContainer.appendChild(div);
+            if(data[i].course_id == "CS-6263") {
+                var div = document.createElement("div");
+                div.innerHTML = '<b>Review'+ counter + ': <b>' + + data[i].body + '<br/><br/><br/>';
+                mainContainer.appendChild(div);
+                counter++;
+            }
         }
     }
 </script>
