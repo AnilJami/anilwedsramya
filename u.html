@@ -14,6 +14,12 @@ var url = 'https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&tq
 var youtube_code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/YOUTUBE_CODE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'
 
 function getYoutubeCode(youtube_url) {
+    if ( youtube_url == null || youtube_url == 'null') {
+        return ''
+    }
+    if (!youtube_url.includes('youtube.com')) {
+        return youtube_url
+    }
     const params = new URLSearchParams(youtube_url);
     const vid = params.get("https://www.youtube.com/watch?v")
     return youtube_code.replace('YOUTUBE_CODE', vid)
