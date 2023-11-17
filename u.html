@@ -1,0 +1,49 @@
+<html>
+<title>Google Sheets json endpoint V4</title>
+<style>
+table {border-collapse: collapse;}
+th,td{border: 1px solid black;}
+</style>
+<body>
+<div id="json">json here</div>
+<script>
+var id = '1h7qXh8hDrXw4LdmSvWrrD7z-ij7hnb00apYZKeMoQ9M'
+var gid = '0';
+var url = 'https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&tq&gid='+gid;
+
+var youtube_code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/YOUTUBE_CODE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'
+
+function getYoutubeCode(youtube_url) {
+    const params = new URLSearchParams(youtube_url);
+    const vid = params.get("https://www.youtube.com/watch?v")
+    return youtube_code.replace('YOUTUBE_CODE', vid)
+
+}
+
+fetch(url)
+  .then(response => response.text())
+  .then(data => document.getElementById("json").innerHTML=myItems(data.substring(47).slice(0, -2))  
+  );
+function myItems(jsonString){
+  var json = JSON.parse(jsonString);
+  console.log(json)
+  var table = '<table><tr>'
+  json.table.cols.forEach(colonne => table += '<th>' + colonne.label + '</th>')
+  table += '</tr>'
+  json.table.rows.forEach(ligne => {
+    table += '<tr>'
+    ligne.c.forEach(cellule => {
+        try{var valeur = cellule.f ? cellule.f : cellule.v}
+        catch(e){var valeur = ''}
+        // table += '<td>' + valeur +  '</td>'
+        table += '<td>' + getYoutubeCode(valeur) +  '</td>'
+      }
+    )
+    table += '</tr>'
+    }
+  )
+  table += '</table>'
+  return table
+}           
+</script>
+</body></html>
