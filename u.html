@@ -20,8 +20,15 @@ function getYoutubeCode(youtube_url) {
     if (!youtube_url.includes('youtube.com')) {
         return youtube_url
     }
-    const params = new URLSearchParams(youtube_url);
-    const vid = params.get("https://www.youtube.com/watch?v")
+    
+    let url= new URL(youtube_url);
+    let params = new URLSearchParams(url.search);
+    let vid = params.get("v");
+    let list = params.get("list");
+    if(list != null) {
+        vid = 'videoseries?list=' + list;
+    }
+
     return youtube_code.replace('YOUTUBE_CODE', vid)
 
 }
