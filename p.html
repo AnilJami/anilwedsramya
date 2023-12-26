@@ -1,0 +1,68 @@
+<html>
+<title>Google Sheets json endpoint V4</title>
+<style>
+table {border-collapse: collapse;}
+
+</style>
+<body>
+<div id="json">json here</div>
+<script>
+var id = '12-ahMizJmeHh2SmUcFC_nUiFZsv36TVf'
+var gid = '0';
+var url = 'https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&tq&gid='+gid;
+//https://docs.google.com/spreadsheets/d//edit?usp=sharing&ouid=114970876423057087156&rtpof=true&sd=true
+
+var youtube_code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/YOUTUBE_CODE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'
+
+function getYoutubeCode(youtube_url) {
+    if ( youtube_url == null || youtube_url == 'null') {
+        return ''
+    }
+    if (!youtube_url.includes('youtube.com')) {
+        return youtube_url
+    }
+    
+    let url= new URL(youtube_url);
+    let params = new URLSearchParams(url.search);
+    let vid = params.get("v");
+    let list = params.get("list");
+    if(list != null) {
+        vid = 'videoseries?list=' + list;
+    }
+
+    return youtube_code.replace('YOUTUBE_CODE', vid);
+
+}
+
+fetch(url)
+  .then(response => response.text())
+  .then(data => document.getElementById("json").innerHTML=myItems(data.substring(47).slice(0, -2))  
+  );
+function myItems(jsonString){
+  var json = JSON.parse(jsonString);
+  console.log(json)
+  var table = '<table><tr>'
+  json.table.cols.forEach(colonne => table += '<th>' + colonne.label + '</th>')
+  table += '</tr>'
+  json.table.rows.forEach(ligne => {
+    table += '<tr>'
+    ligne.c.forEach( (cellule, index) => {
+
+        if(index > 1 ) {
+            return;
+        }
+
+        try{var valeur = cellule.f ? cellule.f : cellule.v}
+        catch(e){var valeur = ''}
+        // table += '<td>' + valeur +  '</td>'
+        table += '<td>' + getYoutubeCode(valeur) +  '</td>'
+      }
+    )
+    table += '</tr>'
+    }
+  )
+  table += '</table>'
+  return table
+}           
+</script>
+</body></html>
