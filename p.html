@@ -10,28 +10,15 @@ table {border-collapse: collapse;}
 var id = '12-ahMizJmeHh2SmUcFC_nUiFZsv36TVf'
 var gid = '0';
 var url = 'https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&tq&gid='+gid;
-//https://docs.google.com/spreadsheets/d//edit?usp=sharing&ouid=114970876423057087156&rtpof=true&sd=true
+//https://docs.google.com/spreadsheets/d/12-ahMizJmeHh2SmUcFC_nUiFZsv36TVf/edit#gid=773243840
 
 var youtube_code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/YOUTUBE_CODE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'
 
 function getYoutubeCode(youtube_url) {
-    if ( youtube_url == null || youtube_url == 'null') {
+    if ( youtube_url == null || youtube_url === 'null') {
         return ''
     }
-    if (!youtube_url.includes('youtube.com')) {
-        return youtube_url
-    }
-    
-    let url= new URL(youtube_url);
-    let params = new URLSearchParams(url.search);
-    let vid = params.get("v");
-    let list = params.get("list");
-    if(list != null) {
-        vid = 'videoseries?list=' + list;
-    }
-
-    return youtube_code.replace('YOUTUBE_CODE', vid);
-
+    return youtube_url;
 }
 
 fetch(url)
@@ -48,13 +35,8 @@ function myItems(jsonString){
     table += '<tr>'
     ligne.c.forEach( (cellule, index) => {
 
-        if(index > 2 ) {
-            return;
-        }
-
         try{var valeur = cellule.f ? cellule.f : cellule.v}
         catch(e){var valeur = ''}
-        // table += '<td>' + valeur +  '</td>'
         table += '<td>' + getYoutubeCode(valeur) +  '</td>'
       }
     )
