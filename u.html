@@ -18,7 +18,11 @@ function getYoutubeCode(youtube_url) {
         return ''
     }
     if (!youtube_url.includes('youtube.com')) {
-        return youtube_url
+        if(youtube_url.startsWith('https')) {
+            return '<a href="'+youtube_url+'" target="_blank">'+youtube_url+'</a>';
+        }else {
+            return youtube_url;
+        }
     }
     
     let url= new URL(youtube_url);
