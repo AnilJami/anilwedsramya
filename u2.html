@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube Playlist Embed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    #video-info {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #error {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>YouTube Playlist</h2>
+
+  <div id="player"></div>
+
+  <div id="video-info">
+    Video <span id="current-video">1</span> of <span id="total-videos">0</span>
+  </div>
+
+  <div id="error"></div>
+
+  <script>
+    let player;
+    let playlistId;
+
+    // Read playlist ID from URL query parameter
+    const params = new URLSearchParams(window.location.search);
+    playlistId = params.get("l");
+
+    if (!playlistId) {
+      document.getElementById("error").textContent =
+        "Missing playlist ID. Use: ?playlist=YOUR_PLAYLIST_ID";
+      document.getElementById("video-info").style.display = "none";
+    } else {
+      // Load YouTube IFrame API
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player("player", {
+        width: "800",
+        height: "450",
+        playerVars: {
+          listType: "playlist",
+          list: playlistId,
+          autoplay: 0,
+          controls: 1
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady() {
+      setTimeout(updateVideoInfo, 500);
+    }
+
+    function onPlayerStateChange() {
+      updateVideoInfo();
+    }
+
+    function updateVideoInfo() {
+      if (!player || typeof player.getPlaylist !== "function") return;
+
+      const playlist = player.getPlaylist();
+      const currentIndex = player.getPlaylistIndex();
+
+      if (playlist && playlist.length > 0) {
+        document.getElementById("current-video").textContent = currentIndex + 1;
+        document.getElementById("total-videos").textContent = playlist.length;
+      }
+    }
+  </script>
+
+</body>
+</html>
