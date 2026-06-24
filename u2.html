@@ -1,17 +1,10 @@
 <!DOCTYPE html>
-<!-- This will play videos in reverse order -->
 <html>
 <head>
-  <title>YouTube Playlist Reverse Embed</title>
-
+  <title>YouTube Playlist Embed</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-
-    h2 {
-      margin-bottom: 16px;
     }
 
     .playlist-layout {
@@ -110,10 +103,9 @@
     }
   </style>
 </head>
-
 <body>
 
-  <h2>YouTube Playlist - Reverse Order</h2>
+  <h2>YouTube Playlist</h2>
 
   <div class="playlist-layout">
     <div id="player"></div>
@@ -136,12 +128,9 @@
     let player;
     let playlistId;
     let thumbnailsCreated = false;
-    let reversedPlaylist = [];
-    let manuallyChangingVideo = false;
 
     const params = new URLSearchParams(window.location.search);
     playlistId = params.get("l");
-    playlistId = 'PLJq-63ZRPdBsPWE24vdpmgeRFMRQyjvvj'
 
     const videoInfo = document.getElementById("video-info");
     const errorBox = document.getElementById("error");
@@ -192,47 +181,12 @@
 
     function onPlayerReady() {
       setTimeout(function () {
-        const playlist = player.getPlaylist();
-
-        if (playlist && playlist.length > 0) {
-          // Start from the last video in the original playlist
-          player.cuePlaylist({
-            listType: "playlist",
-            list: playlistId,
-            index: playlist.length - 1
-          });
-        }
-
         updateVideoInfo();
-      }, 700);
+      }, 500);
     }
 
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.ENDED) {
-        playPreviousVideoInReverseOrder();
-      }
-
+    function onPlayerStateChange() {
       updateVideoInfo();
-    }
-
-    function playPreviousVideoInReverseOrder() {
-      if (!player || typeof player.getPlaylist !== "function") return;
-
-      const playlist = player.getPlaylist();
-      const currentIndex = player.getPlaylistIndex();
-
-      if (!playlist || playlist.length === 0) return;
-
-      const previousIndex = currentIndex - 1;
-
-      if (previousIndex >= 0) {
-        manuallyChangingVideo = true;
-        player.playVideoAt(previousIndex);
-
-        setTimeout(function () {
-          manuallyChangingVideo = false;
-        }, 500);
-      }
     }
 
     function updateVideoInfo() {
@@ -241,14 +195,9 @@
       const playlist = player.getPlaylist();
       const currentIndex = player.getPlaylistIndex();
 
-      if (playlist && playlist.length > 0 && currentIndex >= 0) {
-        const totalVideos = playlist.length;
-
-        // Convert original playlist index to reverse-order display number
-        const reverseIndex = totalVideos - currentIndex - 1;
-
-        document.getElementById("current-video").textContent = reverseIndex + 1;
-        document.getElementById("total-videos").textContent = totalVideos;
+      if (playlist && playlist.length > 0) {
+        document.getElementById("current-video").textContent = currentIndex + 1;
+        document.getElementById("total-videos").textContent = playlist.length;
 
         updateActiveThumbnail(currentIndex);
         scrollActiveThumbnailIntoView();
@@ -267,33 +216,24 @@
 
       thumbnailPanel.innerHTML = "";
 
-      reversedPlaylist = playlist
-        .map(function (videoId, originalIndex) {
-          return {
-            videoId: videoId,
-            originalIndex: originalIndex
-          };
-        })
-        .reverse();
-
-      reversedPlaylist.forEach(function (video, reverseIndex) {
+      playlist.forEach(function (videoId, index) {
         const item = document.createElement("div");
         item.className = "thumbnail-item";
-        item.dataset.index = video.originalIndex;
+        item.dataset.index = index;
 
         const img = document.createElement("img");
-        img.src = "https://img.youtube.com/vi/" + video.videoId + "/mqdefault.jpg";
-        img.alt = "Video " + (reverseIndex + 1);
+        img.src = "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg";
+        img.alt = "Video " + (index + 1);
 
         const number = document.createElement("div");
         number.className = "thumbnail-number";
-        number.textContent = "Video " + (reverseIndex + 1);
+        number.textContent = "Video " + (index + 1);
 
         item.appendChild(img);
         item.appendChild(number);
 
         item.addEventListener("click", function () {
-          player.playVideoAt(video.originalIndex);
+          player.playVideoAt(index);
           updateVideoInfo();
         });
 
@@ -308,9 +248,9 @@
       const items = document.querySelectorAll(".thumbnail-item");
 
       items.forEach(function (item) {
-        const originalIndex = Number(item.dataset.index);
+        const index = Number(item.dataset.index);
 
-        if (originalIndex === currentIndex) {
+        if (index === currentIndex) {
           item.classList.add("active");
         } else {
           item.classList.remove("active");
