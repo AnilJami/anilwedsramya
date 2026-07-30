@@ -1,0 +1,22 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject webhook URL
+        run: |
+          sed -i "s|__WEBHOOK_URL_TEAMS__|${WEBHOOK_URL_TEAMS}|g" index.html
+        env:
+          WEBHOOK_URL_TEAMS: ${{ vars.WEBHOOK_URL_TEAMS }}
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
