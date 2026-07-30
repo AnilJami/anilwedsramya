@@ -5,5 +5,41 @@ table {border-collapse: collapse;}
 
 </style>
 <body>
-Hi
+<button id="sendBtn">Send POST Data</button>
+
+<script>
+    document.getElementById('sendBtn').addEventListener('click', () => {
+        const payload = {
+            "type": "message",
+            "attachments": [
+                {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "TextBlock",
+                                "text": "test message at " + new Date()
+                            }
+                        ],
+                        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                        "version": "1.2"
+                    }
+                }
+            ]
+        }
+        const url = "https://default62ccb8646a1a4b5d8e1c397dec1a82.58.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/129852bdb71e4d5fa3cac9b54b223a35/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MP4Rni_6pRwKUZsZpCyMpcRtVw584sbD2qtWWkKwl_E"
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
 </body></html>
