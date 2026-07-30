@@ -13,8 +13,7 @@ table {border-collapse: collapse;}
     function changeWelcomeMessage() {
         // Find the element by its unique ID
         const messageElement = document.getElementById("myMessage");
-
-
+        const params = new URLSearchParams(window.location.search);
         const payload = {
             "type": "message",
             "attachments": [
@@ -42,7 +41,7 @@ table {border-collapse: collapse;}
             },
             body: JSON.stringify(payload)
         })
-            .then(data => messageElement.textContent = "✅ Success" )
+            .then(data => messageElement.textContent = "✅ Success 🔔 : " + params)
             .catch(error => {
                 console.log(error)
                 messageElement.textContent = "❌ Failed"
