@@ -6,10 +6,11 @@ table {border-collapse: collapse;}
 </style>
 <body>
 <h1 id="myMessage">Loading...</h1>
-<p>v2</p>
+<p>v3</p>
 
 <script>
-    const webhookUrl = "__WEBHOOK_URL_TEAMS__";
+    let webhookUrl = "__WEBHOOK_URL_TEAMS__";
+    webhookUrl = webhookUrl + "&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MP4Rni_6pRwKUZsZpCyMpcRtVw584sbD2qtWWkKwl_E"
     // 1. Define the function that changes the text
     function changeWelcomeMessage() {
         // Find the element by its unique ID
@@ -34,7 +35,6 @@ table {border-collapse: collapse;}
                 }
             ]
         }
-        const url = "https://default62ccb8646a1a4b5d8e1c397dec1a82.58.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/129852bdb71e4d5fa3cac9b54b223a35/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MP4Rni_6pRwKUZsZpCyMpcRtVw584sbD2qtWWkKwl_E"
         fetch(webhookUrl, {
             method: 'POST',
             headers: {
