@@ -1,0 +1,57 @@
+<html>
+<title>Google Sheets json endpoint V4</title>
+<style>
+table {border-collapse: collapse;}
+
+</style>
+<body>
+<h1 id="myMessage">Loading...</h1>
+
+<script>
+    const webhookUrl = "https://default62ccb8646a1a4b5d8e1c397dec1a82.58.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/129852bdb71e4d5fa3cac9b54b223a35/triggers/manual/paths/invoke?api-version=1__WEBHOOK_URL_TEAMS__sp=%2Ftriggers%2Fmanual%2Frun__WEBHOOK_URL_TEAMS__sv=1.0__WEBHOOK_URL_TEAMS__sig=MP4Rni_6pRwKUZsZpCyMpcRtVw584sbD2qtWWkKwl_E";
+    // 1. Define the function that changes the text
+    function changeWelcomeMessage() {
+        // Find the element by its unique ID
+        const messageElement = document.getElementById("myMessage");
+        const params = new URLSearchParams(window.location.search);
+        const payload = {
+            "type": "message",
+            "attachments": [
+                {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "TextBlock",
+                                "text": "test message at " + new Date()
+                            }
+                        ],
+                        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                        "version": "1.2"
+                    }
+                }
+            ]
+        }
+        const url = "https://default62ccb8646a1a4b5d8e1c397dec1a82.58.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/129852bdb71e4d5fa3cac9b54b223a35/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MP4Rni_6pRwKUZsZpCyMpcRtVw584sbD2qtWWkKwl_E"
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(data => messageElement.textContent = "✅ Success 🔔 : " + params)
+            .catch(error => {
+                console.log(error)
+                messageElement.textContent = "❌ Failed"
+            } );
+
+    }
+
+    // 2. Trigger the function as soon as the HTML document is fully loaded
+    document.addEventListener("DOMContentLoaded", changeWelcomeMessage);
+
+</script>
+
+</body></html>

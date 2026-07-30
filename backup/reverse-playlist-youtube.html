@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!-- This will play videos in reverse order -->
+<html>
+<head>
+  <title>YouTube Playlist Reverse Embed</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+    }
+
+    .playlist-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    #player {
+      width: 800px;
+      height: 450px;
+      flex: 0 0 auto;
+    }
+
+    #thumbnail-panel {
+      width: 260px;
+      height: 450px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 8px;
+      box-sizing: border-box;
+      background: #fafafa;
+      display: none;
+    }
+
+    .thumbnail-item {
+      cursor: pointer;
+      border: 2px solid transparent;
+      padding: 6px;
+      border-radius: 6px;
+      background: #f4f4f4;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .thumbnail-item:hover {
+      border-color: #cc0000;
+      background: #fff;
+    }
+
+    .thumbnail-item.active {
+      border-color: #cc0000;
+      background: #ffecec;
+    }
+
+    .thumbnail-item img {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .thumbnail-number {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #video-info {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #controls {
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+
+    #toggle-thumbnails {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #error {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 1100px) {
+      .playlist-layout {
+        flex-direction: column;
+      }
+
+      #player {
+        width: 100%;
+        max-width: 800px;
+      }
+
+      #thumbnail-panel {
+        width: 100%;
+        max-width: 800px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>YouTube Playlist - Reverse Order</h2>
+
+  <div class="playlist-layout">
+    <div id="player"></div>
+    <div id="thumbnail-panel"></div>
+  </div>
+
+  <div id="video-info">
+    Video <span id="current-video">1</span> of <span id="total-videos">0</span>
+  </div>
+
+  <div id="controls">
+    <button id="toggle-thumbnails" type="button">
+      Show Thumbnails
+    </button>
+  </div>
+
+  <div id="error"></div>
+
+  <script>
+    let player;
+    let playlistId;
+    let thumbnailsCreated = false;
+    let reversedPlaylist = [];
+    let manuallyChangingVideo = false;
+
+    const params = new URLSearchParams(window.location.search);
+    playlistId = params.get("l");
+    playlistId = 'PLJq-63ZRPdBsPWE24vdpmgeRFMRQyjvvj'
+
+    const videoInfo = document.getElementById("video-info");
+    const errorBox = document.getElementById("error");
+    const thumbnailPanel = document.getElementById("thumbnail-panel");
+    const toggleButton = document.getElementById("toggle-thumbnails");
+    const controls = document.getElementById("controls");
+
+    if (!playlistId) {
+      errorBox.textContent = "Missing playlist ID. Use: ?playlist=YOUR_PLAYLIST_ID";
+      videoInfo.style.display = "none";
+      controls.style.display = "none";
+    } else {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
+
+    toggleButton.addEventListener("click", function () {
+      if (thumbnailPanel.style.display === "block") {
+        thumbnailPanel.style.display = "none";
+        toggleButton.textContent = "Show Thumbnails";
+      } else {
+        thumbnailPanel.style.display = "block";
+        toggleButton.textContent = "Hide Thumbnails";
+
+        if (!thumbnailsCreated) {
+          createThumbnails();
+        }
+      }
+    });
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player("player", {
+        width: "800",
+        height: "450",
+        playerVars: {
+          listType: "playlist",
+          list: playlistId,
+          autoplay: 0,
+          controls: 1
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady() {
+      setTimeout(function () {
+        const playlist = player.getPlaylist();
+
+        if (playlist && playlist.length > 0) {
+          // Start from the last video in the original playlist
+          player.cuePlaylist({
+            listType: "playlist",
+            list: playlistId,
+            index: playlist.length - 1
+          });
+        }
+
+        updateVideoInfo();
+      }, 700);
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.ENDED) {
+        playPreviousVideoInReverseOrder();
+      }
+
+      updateVideoInfo();
+    }
+
+    function playPreviousVideoInReverseOrder() {
+      if (!player || typeof player.getPlaylist !== "function") return;
+
+      const playlist = player.getPlaylist();
+      const currentIndex = player.getPlaylistIndex();
+
+      if (!playlist || playlist.length === 0) return;
+
+      const previousIndex = currentIndex - 1;
+
+      if (previousIndex >= 0) {
+        manuallyChangingVideo = true;
+        player.playVideoAt(previousIndex);
+
+        setTimeout(function () {
+          manuallyChangingVideo = false;
+        }, 500);
+      }
+    }
+
+    function updateVideoInfo() {
+      if (!player || typeof player.getPlaylist !== "function") return;
+
+      const playlist = player.getPlaylist();
+      const currentIndex = player.getPlaylistIndex();
+
+      if (playlist && playlist.length > 0 && currentIndex >= 0) {
+        const totalVideos = playlist.length;
+
+        // Convert original playlist index to reverse-order display number
+        const reverseIndex = totalVideos - currentIndex - 1;
+
+        document.getElementById("current-video").textContent = reverseIndex + 1;
+        document.getElementById("total-videos").textContent = totalVideos;
+
+        updateActiveThumbnail(currentIndex);
+        scrollActiveThumbnailIntoView();
+      }
+    }
+
+    function createThumbnails() {
+      if (!player || typeof player.getPlaylist !== "function") return;
+
+      const playlist = player.getPlaylist();
+
+      if (!playlist || playlist.length === 0) {
+        setTimeout(createThumbnails, 500);
+        return;
+      }
+
+      thumbnailPanel.innerHTML = "";
+
+      reversedPlaylist = playlist
+        .map(function (videoId, originalIndex) {
+          return {
+            videoId: videoId,
+            originalIndex: originalIndex
+          };
+        })
+        .reverse();
+
+      reversedPlaylist.forEach(function (video, reverseIndex) {
+        const item = document.createElement("div");
+        item.className = "thumbnail-item";
+        item.dataset.index = video.originalIndex;
+
+        const img = document.createElement("img");
+        img.src = "https://img.youtube.com/vi/" + video.videoId + "/mqdefault.jpg";
+        img.alt = "Video " + (reverseIndex + 1);
+
+        const number = document.createElement("div");
+        number.className = "thumbnail-number";
+        number.textContent = "Video " + (reverseIndex + 1);
+
+        item.appendChild(img);
+        item.appendChild(number);
+
+        item.addEventListener("click", function () {
+          player.playVideoAt(video.originalIndex);
+          updateVideoInfo();
+        });
+
+        thumbnailPanel.appendChild(item);
+      });
+
+      thumbnailsCreated = true;
+      updateVideoInfo();
+    }
+
+    function updateActiveThumbnail(currentIndex) {
+      const items = document.querySelectorAll(".thumbnail-item");
+
+      items.forEach(function (item) {
+        const originalIndex = Number(item.dataset.index);
+
+        if (originalIndex === currentIndex) {
+          item.classList.add("active");
+        } else {
+          item.classList.remove("active");
+        }
+      });
+    }
+
+    function scrollActiveThumbnailIntoView() {
+      const activeItem = document.querySelector(".thumbnail-item.active");
+
+      if (activeItem && thumbnailPanel.style.display === "block") {
+        activeItem.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>
