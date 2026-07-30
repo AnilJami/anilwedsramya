@@ -5,10 +5,16 @@ table {border-collapse: collapse;}
 
 </style>
 <body>
-<button id="sendBtn">Send POST Data</button>
+<h1 id="myMessage">Loading...</h1>
 
 <script>
-    document.getElementById('sendBtn').addEventListener('click', () => {
+
+    // 1. Define the function that changes the text
+    function changeWelcomeMessage() {
+        // Find the element by its unique ID
+        const messageElement = document.getElementById("myMessage");
+
+
         const payload = {
             "type": "message",
             "attachments": [
@@ -36,10 +42,17 @@ table {border-collapse: collapse;}
             },
             body: JSON.stringify(payload)
         })
-            .then(response => response.json())
-            .then(data => console.log('Success:', data))
-            .catch(error => console.error('Error:', error));
-    });
+            .then(data => messageElement.textContent = "✅ Success" )
+            .catch(error => {
+                console.log(error)
+                messageElement.textContent = "❌ Failed"
+            } );
+
+    }
+
+    // 2. Trigger the function as soon as the HTML document is fully loaded
+    document.addEventListener("DOMContentLoaded", changeWelcomeMessage);
+
 </script>
 
 </body></html>
