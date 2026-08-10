@@ -9,7 +9,18 @@
     <h2>All Links</h2>
 
     <ol>
-        <li> <a href="static/learning/colors.html">Colors</a></li>
+        <li> <a target="_blank" href="https://docs.google.com/spreadsheets/d/1Db21jc0yPGRKHsWkJbHH087StgH0EiFbLF5w9FRDQ7A">Aryan Notes</a></li>
+    </ol>
+</div>
+
+
+
+<!-- The Button -->
+<button onclick="toggleContent()">Hide Content</button>
+
+<!-- The Content to Show/Hide -->
+<div id="myContent">
+    <ol>
         <li> <a target="_blank" href="https://docs.google.com/spreadsheets/d/1VMXP6K4xdk8uFD3duR8clLClRihy1LpZc_ms0unE1As/edit?usp=sharing">Job</a></li>
         <li> <a target="_blank" href="https://1drv.ms/u/s!Aic3j1ym3c3kgx2y3VvFzABQbg9Q?e=86aC2S">Shared Folder</a></li>
         <li> <a target="_blank" href="https://1drv.ms/w/s!Aic3j1ym3c3kgx-DMx_uADUGdv08?e=t7P9Wf"> Shared Doc </a> </li>
@@ -18,13 +29,26 @@
         <li> <a href="https://output.jsbin.com/sonumab/"> jsbin </a> </li>
         <li> <a target="_blank" href="static/baby-weight-form.html"> Baby Weight Form</a> </li>
         <li> <a target="_blank" href="static/baby-weight.html"> Baby Weight Chart</a> </li>
-        <li> <a href="https://learn.microsoft.com/en-us/training/modules/get-started-ai-fundamentals/1-introduction?pivots=text"> AI-901</a> </li>
-
-        
     </ol>
-
-    <!--<div id="checkli-embed-1628225556589" class="checkli-embed" url="https://www.checkli.com/checklists/610cbddce74f7/embed"></div><script defer src="https://checkli.com/js/checkli-embed.js"></script>-->
 </div>
+
+<!-- The JavaScript Logic -->
+<script>
+    function toggleContent() {
+      const content = document.getElementById("myContent");
+      const button = document.querySelector("button");
+
+      if (content.style.display === "none") {
+        content.style.display = "block";  // Shows the element
+        button.textContent = "Hide Content"; // Updates button text
+      } else {
+        content.style.display = "none";   // Hides the element
+        button.textContent = "Show Content"; // Updates button text
+      }
+    }
+    toggleContent()
+</script>
+
 
 </body>
 </html>
