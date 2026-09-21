@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Google Sheet Preview</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    td, th {
+      border: 1px solid #999;
+      padding: 8px 12px;
+      min-width: 120px;
+      height: 32px;
+    }
+
+    th {
+      background: #f2f2f2;
+    }
+
+    .error {
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Google Sheet - Top 10 Rows and 5 Columns</h2>
+
+  <button onclick="loadSheet()">Load Sheet</button>
+
+  <div id="error" class="error"></div>
+
+  <table id="sheetTable"></table>
+
+  <script>
+    const SPREADSHEET_ID = "1h7qXh8hDrXw4LdmSvWrrD7z-ij7hnb00apYZKeMoQ9M";
+    const ACCESS_TOKEN = "SPREADSHEET_ACCESS_TOKEN";
+
+    // Top 10 rows and 5 columns: A1:E10
+    const RANGE = "Sheet1!A1:E10";
+
+    async function loadSheet() {
+      const table = document.getElementById("sheetTable");
+      const errorDiv = document.getElementById("error");
+
+      table.innerHTML = "";
+      errorDiv.textContent = "";
+
+      try {
+        const url =
+          `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}` +
+          `?ranges=${encodeURIComponent(RANGE)}` +
+          `&includeGridData=true`;
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+            Accept: "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+        }
+
+        const data = await response.json();
+
+        const rows =
+          data.sheets?.[0]?.data?.[0]?.rowData || [];
+
+        renderTable(rows);
+      } catch (error) {
+        console.error(error);
+        errorDiv.textContent = "Error loading sheet data. Check console for details.";
+      }
+    }
+
+    function renderTable(rows) {
+      const table = document.getElementById("sheetTable");
+
+      for (let rowIndex = 0; rowIndex < 10; rowIndex++) {
+        const tr = document.createElement("tr");
+
+        const row = rows[rowIndex];
+        const cells = row?.values || [];
+
+        for (let colIndex = 0; colIndex < 5; colIndex++) {
+          const td = document.createElement("td");
+
+          const cell = cells[colIndex];
+
+          if (cell) {
+            td.textContent = getCellValue(cell);
+
+            const bg =
+              cell.effectiveFormat?.backgroundColor ||
+              cell.userEnteredFormat?.backgroundColor;
+
+            td.style.backgroundColor = bg ? colorToCss(bg) : "#ffffff";
+          } else {
+            td.textContent = "";
+            td.style.backgroundColor = "#ffffff";
+          }
+
+          tr.appendChild(td);
+        }
+
+        table.appendChild(tr);
+      }
+    }
+
+    function getCellValue(cell) {
+      if (cell.formattedValue !== undefined) {
+        return cell.formattedValue;
+      }
+
+      const value = cell.userEnteredValue;
+
+      if (!value) {
+        return "";
+      }
+
+      if (value.stringValue !== undefined) {
+        return value.stringValue;
+      }
+
+      if (value.numberValue !== undefined) {
+        return value.numberValue;
+      }
+
+      if (value.boolValue !== undefined) {
+        return value.boolValue;
+      }
+
+      if (value.formulaValue !== undefined) {
+        return value.formulaValue;
+      }
+
+      return "";
+    }
+
+    function colorToCss(color) {
+      const r = Math.round((color.red ?? 1) * 255);
+      const g = Math.round((color.green ?? 1) * 255);
+      const b = Math.round((color.blue ?? 1) * 255);
+      const a = color.alpha ?? 1;
+
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+  </script>
+</body>
+</html>
