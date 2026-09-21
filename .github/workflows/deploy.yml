@@ -1,0 +1,2 @@
+- name: Inject Environment Variables
+  run: sed -i 's|SPREADSHEET_ACCESS_TOKEN|${{ secrets.SPREADSHEET_ACCESS_TOKEN }}|g' u3.html
